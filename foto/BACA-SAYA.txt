@@ -1,0 +1,8 @@
+Taruh foto kalian di folder ini, misalnya 1.jpg, 2.jpg, 3.jpg
+lalu daftarkan di config.js:  FOTO: ['foto/1.jpg', 'foto/2.jpg', 'foto/3.jpg'],
+
+Tips:
+- Pakai foto LANDSCAPE (melebar), lebar sekitar 1920 px.
+- Ukuran file usahakan di bawah 500 KB per foto supaya cepat dimuat
+  (bisa dikecilkan gratis di squoosh.app atau tinypng.com).
+- Nama file jangan pakai spasi (pakai 1.jpg, foto-prewed.jpg, dll).
