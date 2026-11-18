@@ -527,7 +527,15 @@ var UNDANGAN = {
     if (!API) return Promise.reject(new Error('API belum diatur'));
     data = data || {}; data.action = action;
     return fetch(API, { method: 'POST', body: JSON.stringify(data) }).then(function (r) { return r.text(); }).then(function (t) {
-      var j = JSON.parse(t); if (!j.ok) throw new Error(j.error || 'Gagal'); return j.data;
+      var j = JSON.parse(t); if (!j.ok) { var er = new Error(j.error || 'Gagal'); er.final = true; throw er; } return j.data;
+    });
+  }
+  /* coba ulang otomatis bila server sedang sibuk / koneksi putus (maks 4x) */
+  function apiRetry(action, data, n) {
+    n = n || 0;
+    return api(action, data).catch(function (e) {
+      if (e.final || n >= 3) throw e;
+      return new Promise(function (ok) { setTimeout(ok, 1200 * (n + 1) + Math.random() * 600); }).then(function () { return apiRetry(action, data, n + 1); });
     });
   }
 
@@ -661,7 +669,7 @@ var UNDANGAN = {
   try { var cached = JSON.parse(localStorage.getItem('gb_inv_' + ID) || 'null'); if (cached) { G.nama = cached.nama; G.jumlahUndangan = cached.jumlahUndangan; G.acara = cached.acara || []; G.kado = cached.kado !== false; renderAcara(); } } catch (e) {}
   if (ID) {
     if (G.nama) setName();
-    api('undangan', { id: ID }).then(function (d) {
+    apiRetry('undangan', { id: ID }).then(function (d) {
       if (!d) { G.nama = TO || ''; setName(); return; }
       G.nama = d.nama; G.jumlahUndangan = d.jumlahUndangan; G.rsvp = d.rsvp; G.jumlahRsvp = d.jumlahRsvp; if (d.qrText) G.qrText = d.qrText;
       G.acara = d.acara || []; G.kado = d.kado !== false; renderAcara();
