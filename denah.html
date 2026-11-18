@@ -197,8 +197,8 @@
       <div class="card">
         <div class="legend">
           <span><i style="background:var(--free)"></i>Kosong</span><span><i style="background:var(--taken);border-color:#c46a92"></i>Terisi</span>
-          <span><i style="background:var(--hadir);border-color:#2c6e49"></i>Sudah hadir</span><span><i style="background:#f6d68a;border-color:#b8875c"></i>Kursi tamu terpilih</span>
-          <span><i style="background:var(--sel);border-color:#000"></i>Dicentang</span>
+          <span><i style="background:var(--hadir);border-color:#2c6e49"></i>Sudah hadir</span><span><i style="background:var(--sel);border-color:#000"></i>Dipilih untuk tamu ini</span>
+          <span><i style="background:#f6d68a;border-color:#b8875c"></i>Akan dilepas</span>
         </div>
         <div class="zoom"><span id="mapSize"></span><button type="button" id="zOut" aria-label="Perkecil">−</button><button type="button" id="zIn" aria-label="Perbesar">+</button></div>
         <div class="mapbox" id="mapbox"><svg class="map" id="map" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Denah kursi"></svg></div>
@@ -683,7 +683,7 @@
   /* =====================================================================
      PENGATURAN DENAH
      ===================================================================== */
-  var LIM = { meja: [1, 60], kursi: [2, 16], baris: [1, 60], blok: [1, 2], maks: [0, 5000], bufLen: [2, 30] };
+  var LIM = { meja: [0, 60], kursi: [2, 16], baris: [0, 60], blok: [1, 2], maks: [0, 5000], bufLen: [2, 30] };
   $('btnSetting').onclick = function () {
     if (dirty() && !confirm('Pilihan kursi belum di-input. Lanjut ke pengaturan?')) return;
     resetSel(); EDIT = clone(CFG); fillSetForm(); renderSet(); show('set'); window.scrollTo(0, 0);
@@ -758,8 +758,7 @@
     $('fBuf').classList.toggle('on', !!EDIT.prasmanan.aktif);
     $('bufOpts').classList.toggle('hidden', !EDIT.prasmanan.aktif);
     Array.prototype.forEach.call($('fBufPos').children, function (b) { b.classList.toggle('on', b.dataset.v === EDIT.prasmanan.posisi); });
-    $('addZone').disabled = f.cap > 0 && L.total >= f.cap;
-    $('addZone').textContent = $('addZone').disabled ? 'Kapasitas gedung penuh' : '＋ Tambah zona';
+    $('addZone').textContent = f.cap > 0 && L.total >= f.cap ? '＋ Tambah zona (mulai 0 kursi — kapasitas penuh)' : '＋ Tambah zona';
     if (!skipZones) $('zones').innerHTML = EDIT.zona.map(function (z, i) { return zoneHTML(z, i, EDIT.zona.length); }).join('') || '<p style="color:var(--ink2);text-align:center">Belum ada zona.</p>';
   }
   // event zona (delegasi)
@@ -800,8 +799,13 @@
     var n = EDIT.zona.length + 1, kode = 'Zona' + n;
     while (EDIT.zona.some(function (z) { return z.kode.toLowerCase() === kode.toLowerCase(); })) kode += 'b';
     var L = layout(EDIT), left = EDIT.kapasitas > 0 ? EDIT.kapasitas - L.total : 999;
-    var z = { id: 'z' + Date.now(), nama: 'Zona ' + n, tipe: 'baris', blok: 2, baris: 1, pola: '5', hadap: 'depan', kode: kode, bernomor: true, nomor: 'ganjil-kanan', maks: left < 10 ? left : 0, pembatas: false };
-    if (tryChange(function (c) { c.zona.push(z); })) setTimeout(function () { var cs = $('zones').querySelectorAll('.zcard'); cs[cs.length - 1].scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 50);
+    var z = { id: 'z' + Date.now(), nama: 'Zona ' + n, tipe: 'baris', blok: 2, baris: left > 0 ? 1 : 0, pola: '5', hadap: 'depan', kode: kode, bernomor: true, nomor: 'ganjil-kanan', maks: left > 0 && left < 10 ? left : 0, pembatas: false };
+    var ok = left > 0 ? tryChange(function (c) { c.zona.push(z); }) : false;
+    if (!ok) { // kapasitas penuh / tidak muat: tetap tambahkan zona kosong (0 kursi)
+      z.baris = 0; z.maks = 0; EDIT.zona.push(z); renderSet();
+      toast('Zona baru ditambahkan dengan 0 kursi karena kapasitas penuh. Kurangi kursi zona lain, lalu tambah baris / meja di zona ini.');
+    }
+    setTimeout(function () { var cs = $('zones').querySelectorAll('.zcard'); cs[cs.length - 1].scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 50);
   };
   $('setSave').onclick = function () {
     var L = layout(EDIT), codes = {}; L.seats.forEach(function (s) { codes[s.k] = 1; });
