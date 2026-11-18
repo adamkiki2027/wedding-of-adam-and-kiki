@@ -38,6 +38,9 @@ try { document.fonts && document.fonts.load('40px "Pinyon Script"'); } catch (e)
 var UNDANGAN = {
   pasangan: 'Adam & Kiki',
   tanggalSingkat: '03 Juli & 05 Desember 2027',
+  // QR kartu masuk hanya untuk tamu yang diundang ke acara berikut (kosongkan [] = semua tamu dapat QR)
+  acaraQr: ['Ngunduh Mantu'],
+  catatanNama: 'Mohon maaf apabila ada kesalahan penulisan nama/gelar',
   pembuka: 'Dengan memohon rahmat dan ridho Allah Subhanahu wa Ta\'ala, kami bermaksud menyelenggarakan acara pernikahan putra-putri kami:',
   mempelai: [
     { nama: 'Nur Rizqy Fitriyani', ortu: 'Putri dari Bapak Taufik, S.Pd. & Ibu Henny Mulyani' },
@@ -152,6 +155,8 @@ var UNDANGAN = {
   .c-div { width: 40%; height: .25cqw; margin: 2.4cqw 0; background: linear-gradient(90deg, var(--pink), transparent); }
   .c-to { font-size: 2.5cqw; color: #9c5a73; }
   .c-nm { font-weight: 700; font-size: 4.2cqw; line-height: 1.12; color: #a8174f; margin-top: .6cqw; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; word-break: break-word; }
+  .c-maaf { font-size: 1.85cqw; font-style: italic; color: #a87a8e; margin-top: 1.1cqw; line-height: 1.3; }
+  .cv-maaf { font-size: 12px; font-style: italic; opacity: .85; margin-top: 4px; }
   .c-qrbox { background: #fff; border-radius: 2cqw; padding: 2.2cqw; box-shadow: 0 .6cqw 2.4cqw rgba(120,40,70,.14); text-align: center; }
   .c-qrbox canvas { width: 100%; height: auto; display: block; image-rendering: pixelated; }
   .c-qrcap { font-family: "League Spartan", sans-serif; font-size: 1.9cqw; letter-spacing: .08em; color: #9c5a73; margin-top: 1.4cqw; line-height: 1.3; }
@@ -350,6 +355,7 @@ var UNDANGAN = {
     <div class="cv-ey">The Wedding of Adam &amp; Kiki</div>
     <div class="cv-to">Kepada Yth. Bapak/Ibu/Saudara/i</div>
     <div class="cv-name wait" id="cvName">Tamu Undangan</div>
+    <div class="cv-maaf" id="cvMaaf"></div>
   </div>
 
   <div class="env-wrap" id="envWrap">
@@ -563,6 +569,7 @@ var UNDANGAN = {
   $('heroDate').textContent = tglSingkat();
   Array.prototype.forEach.call(document.querySelectorAll('.js-dt'), function (el) { el.textContent = tglSingkat(); });
   document.querySelector('.s-gift').hidden = G.kado === false;
+  if (document.querySelector('.card')) syncQr();
   if (typeof io !== 'undefined' && io) Array.prototype.forEach.call(document.querySelectorAll('#acaraBox .rv:not(.in)'), function (el) { io.observe(el); });
   }
   renderAcara();
@@ -595,23 +602,46 @@ var UNDANGAN = {
     for (var r = 0; r < n; r++) for (var k = 0; k < n; k++) if (q.isDark(r, k)) c.fillRect((k + quiet) * cell, (r + quiet) * cell, cell, cell);
     return cv;
   }
+  function qrOn() {
+    if (!G.qrText) return false;
+    var need = (U.acaraQr || []).map(function (x) { return String(x).toLowerCase(); });
+    if (!need.length) return true;
+    return acaraTamu().some(function (a) { var j = String(a.judul).toLowerCase(); return need.some(function (n) { return j.indexOf(n) >= 0 || n.indexOf(j) >= 0; }); });
+  }
   function cardHTML() {
-    var hasQR = !!G.qrText;
-    return '<div class="card' + (hasQR ? '' : ' noqr') + '"><div class="c-in"><div>' +
+    var hasQR = qrOn();
+    return '<div class="card' + (hasQR ? '' : ' noqr') + '">' + cardInner(hasQR) + '</div>';
+  }
+  function cardInner(hasQR) {
+    return '<div class="c-in"><div>' +
       '<div class="c-ey">The Wedding of</div><div class="c-cp">' + esc(U.pasangan) + '</div><div class="c-dt js-dt">' + esc(tglSingkat()) + '</div>' +
-      '<div class="c-div"></div><div class="c-to">Kepada Yth. Bapak/Ibu/Saudara/i</div><div class="c-nm js-nm">' + esc(G.nama || 'Tamu Undangan') + '</div></div>' +
+      '<div class="c-div"></div><div class="c-to">Kepada Yth. Bapak/Ibu/Saudara/i</div><div class="c-nm js-nm">' + esc(G.nama || 'Tamu Undangan') + '</div>' +
+      (U.catatanNama ? '<div class="c-maaf">' + esc(U.catatanNama) + '</div>' : '') + '</div>' +
       (hasQR ? '<div class="c-qrbox"><div class="js-qr"></div><div class="c-qrcap">KARTU MASUK<br>tunjukkan saat hadir</div><div class="c-id">' + esc(G.id) + '</div></div>'
              : '<div><img class="c-orchid" src="aset/anggrek.webp" alt=""></div>') +
-      '</div></div>';
+      '</div>';
+  }
+  /* sesuaikan kartu bila data tamu (acara) baru diketahui */
+  function syncQr() {
+    var on = qrOn();
+    Array.prototype.forEach.call(document.querySelectorAll('.card'), function (c) {
+      if (c.classList.contains('noqr') !== on) return;
+      c.classList.toggle('noqr', !on); c.innerHTML = cardInner(on);
+    });
+    $('sQr').hidden = !on;
+    if (on && !$('qrSlot').innerHTML) $('qrSlot').innerHTML = cardHTML();
+    if ($('fly').classList.contains('ready')) { $('btnSave').style.display = on ? '' : 'none'; $('flyNote').style.display = on ? '' : 'none'; }
+    fillCards();
   }
   function fillCards() {
     Array.prototype.forEach.call(document.querySelectorAll('.js-nm'), function (el) { el.textContent = G.nama || 'Tamu Undangan'; });
-    if (G.qrText) Array.prototype.forEach.call(document.querySelectorAll('.js-qr'), function (el) {
+    if (qrOn()) Array.prototype.forEach.call(document.querySelectorAll('.js-qr'), function (el) {
       if (el.dataset.t === G.qrText) return; el.dataset.t = G.qrText; el.innerHTML = ''; el.appendChild(qrCanvas(G.qrText, 480));
     });
   }
   $('eCard').innerHTML = cardHTML();
-  if (G.qrText) { $('sQr').hidden = false; $('qrSlot').innerHTML = cardHTML(); }
+  if (qrOn()) { $('sQr').hidden = false; $('qrSlot').innerHTML = cardHTML(); }
+  $('cvMaaf').textContent = ID ? (U.catatanNama || '') : '';
   fillCards();
 
   function setName() {
@@ -667,7 +697,7 @@ var UNDANGAN = {
     card.classList.add('anim');
     requestAnimationFrame(function () { card.style.transform = 'none'; });
     $('envWrap').classList.add('low');
-    setTimeout(function () { $('fly').classList.add('ready'); if (!G.qrText) { $('btnSave').style.display = 'none'; $('flyNote').style.display = 'none'; } }, 900);
+    setTimeout(function () { $('fly').classList.add('ready'); if (!qrOn()) { $('btnSave').style.display = 'none'; $('flyNote').style.display = 'none'; } }, 900);
   }
 
   $('btnOpen').onclick = function () {
@@ -696,7 +726,7 @@ var UNDANGAN = {
 
   /* ---------- simpan QR sebagai gambar ---------- */
   function saveQR() {
-    if (!G.qrText) return;
+    if (!qrOn()) return;
     var W = 1080, H = 1350, cv = document.createElement('canvas'); cv.width = W; cv.height = H; var c = cv.getContext('2d');
     var go = function () {
       c.fillStyle = '#fbf5ea'; c.fillRect(0, 0, W, H);
@@ -711,6 +741,7 @@ var UNDANGAN = {
       var words = String(G.nama || '').split(' '), line = '', y = 474, lines = [];
       words.forEach(function (w) { var t = line ? line + ' ' + w : w; if (c.measureText(t).width > W - 200 && line) { lines.push(line); line = w; } else line = t; });
       lines.push(line); lines.slice(0, 2).forEach(function (l) { c.fillText(l, W / 2, y); y += 62; });
+      if (U.catatanNama) { c.font = 'italic 24px Alegreya, serif'; c.fillStyle = '#a87a8e'; c.fillText(U.catatanNama, W / 2, y - 18); y += 18; }
       var q = qrCanvas(G.qrText, 560), qs = 560, qx = (W - qs) / 2, qy = y + 10;
       c.fillStyle = '#fff'; c.fillRect(qx - 20, qy - 20, qs + 40, qs + 40);
       c.imageSmoothingEnabled = false; c.drawImage(q, qx, qy, qs, qs);
