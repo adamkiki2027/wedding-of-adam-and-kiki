@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Denah Kursi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="config.js"></script>
+<style>
+  :root { --bg:#f7f2ec; --surface:#fff; --ink:#2f2520; --ink2:#6f6158; --muted:#a39388; --line:#ece3d9; --gold:#b8875c; --gold2:#d8b48a; --gold-soft:#f4e9dc;
+          --sage:#3f7a57; --sage-soft:#e6f2ea; --rose:#b5483f; --rose-soft:#f8e6e3; --shadow:0 10px 30px rgba(60,40,25,.10);
+          --free:#ffffff; --taken:#e9a8c3; --hadir:#3f9a66; --sel:#2f2520; }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:"Plus Jakarta Sans",system-ui,sans-serif; font-size:15px; }
+  .hidden { display:none !important; }
+  button, input, select { font-family:inherit; }
+  header { background:linear-gradient(160deg,#3a2d26,#241c18); color:#fff; padding:18px 16px 60px; }
+  header .in { max-width:1000px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; gap:10px; }
+  .eyebrow { font-size:11px; letter-spacing:3px; text-transform:uppercase; color:var(--gold2); font-weight:700; }
+  .couple { font-family:"Great Vibes",cursive; font-size:32px; line-height:1.1; margin-top:2px; }
+  .hbtns { display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+  .hbtn { color:#fff; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.22); padding:9px 12px; border-radius:12px; font-size:13px; font-weight:600; text-decoration:none; cursor:pointer; white-space:nowrap; }
+  .wrap { max-width:1000px; margin:-44px auto 0; padding:0 12px 150px; }
+  .card { background:var(--surface); border-radius:20px; box-shadow:var(--shadow); padding:14px; margin-bottom:12px; }
+  .card h3 { margin:0 0 10px; font-size:16px; }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(92px,1fr)); gap:8px; }
+  .stat { background:#fcfaf7; border:1px solid var(--line); border-radius:14px; padding:9px 6px; text-align:center; }
+  .stat b { display:block; font-size:18px; font-weight:800; }
+  .stat b small { font-size:12px; color:var(--muted); font-weight:700; }
+  .stat span { font-size:10.5px; color:var(--ink2); font-weight:600; display:block; line-height:1.3; }
+  .stat em { font-style:normal; font-size:10.5px; color:var(--hadir); font-weight:700; }
+  .live { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:10px; font-size:12.5px; color:var(--ink2); }
+  .sw { width:42px; height:24px; border-radius:99px; background:#d9d0c6; position:relative; flex:none; transition:.2s; border:0; cursor:pointer; }
+  .sw::after { content:""; position:absolute; left:3px; top:3px; width:18px; height:18px; border-radius:50%; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.25); transition:.2s; }
+  .sw.on { background:var(--sage); } .sw.on::after { left:21px; }
+  .dot { display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--muted); margin-right:6px; vertical-align:1px; }
+  .dot.on { background:#3fbf6f; animation:blink 1.6s infinite; }
+  @keyframes blink { 50% { opacity:.3; } }
+  .note { background:var(--gold-soft); color:#7a5530; border-radius:14px; padding:11px 13px; font-size:13px; line-height:1.5; margin-bottom:12px; }
+  .note.bad { background:var(--rose-soft); color:var(--rose); }
+
+  .combo { position:relative; }
+  .combo .cin { width:100%; padding:13px 40px 13px 42px; border:1.5px solid var(--line); border-radius:14px; background:#fcfaf7; font-size:15px; outline:none; color:var(--ink); }
+  .combo .cin:focus { border-color:var(--gold); background:#fff; }
+  .combo .ico { position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--muted); pointer-events:none; }
+  .combo .clr { position:absolute; right:8px; top:50%; transform:translateY(-50%); border:0; background:#f0e9e1; width:28px; height:28px; border-radius:50%; cursor:pointer; color:var(--ink2); font-size:15px; }
+  .panel { position:absolute; left:0; right:0; top:calc(100% + 6px); z-index:40; background:#fff; border:1px solid var(--line); border-radius:16px; box-shadow:0 16px 40px rgba(60,40,25,.18); padding:6px 10px 8px; max-height:min(60vh,440px); display:flex; flex-direction:column; }
+  .chips { display:flex; gap:6px; overflow-x:auto; padding:6px 0; flex:none; scrollbar-width:none; }
+  .chip { flex:none; border:1.5px solid var(--line); background:#fff; color:var(--ink2); border-radius:999px; padding:6px 11px; font-size:12.5px; font-weight:600; cursor:pointer; }
+  .chip.on { background:var(--ink); border-color:var(--ink); color:#fff; }
+  .glist { overflow:auto; flex:1; }
+  .gi { display:flex; gap:10px; align-items:center; padding:11px 6px; border-bottom:1px solid var(--line); cursor:pointer; }
+  .gi:active { background:#faf6f1; }
+  .gi .n { flex:1; min-width:0; } .gi .n b { display:block; font-size:14.5px; } .gi .n small { color:var(--ink2); font-size:12px; }
+  .gi .pax { font-size:12px; font-weight:800; color:var(--ink2); background:#f3efe9; border-radius:9px; padding:4px 8px; white-space:nowrap; }
+  .cursub { margin-top:8px; font-size:12.5px; color:var(--ink2); }
+  .lbl { font-size:12px; font-weight:700; color:var(--ink2); margin:0 0 6px; text-transform:uppercase; letter-spacing:.08em; }
+  .selinfo { margin-top:10px; display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+  .pill { font-size:12px; font-weight:700; padding:5px 10px; border-radius:999px; background:#f3efe9; color:var(--ink2); }
+  .pill.ok { background:var(--sage-soft); color:var(--sage); } .pill.warn { background:var(--gold-soft); color:#8a6238; } .pill.code { background:#2f2520; color:#fff; }
+  .row-btn { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+  .btn { border:0; border-radius:12px; padding:11px 14px; font-size:14px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:6px; }
+  .btn:disabled { opacity:.5; cursor:default; }
+  .btn-dark { background:linear-gradient(135deg,var(--ink),#4a3a31); color:#fff; }
+  .btn-light { background:#f3efe9; color:var(--ink); }
+  .btn-sage { background:linear-gradient(135deg,#3f7a57,#5a9874); color:#fff; }
+  .btn-danger { background:var(--rose-soft); color:var(--rose); }
+
+  .legend { display:flex; flex-wrap:wrap; gap:8px 14px; font-size:12px; color:var(--ink2); margin-bottom:8px; }
+  .legend i { display:inline-block; width:13px; height:13px; border-radius:4px; vertical-align:-2px; margin-right:5px; border:1.5px solid #cbb9a8; }
+  .zoom { display:flex; gap:6px; align-items:center; justify-content:flex-end; margin-bottom:8px; }
+  .zoom button { width:34px; height:34px; border-radius:10px; border:1.5px solid var(--line); background:#fff; font-size:17px; font-weight:700; cursor:pointer; color:var(--ink); }
+  .zoom span { font-size:12px; color:var(--ink2); margin-right:auto; }
+  .mapbox { overflow:auto; border-radius:14px; background:#faf5ef; border:1px solid var(--line); -webkit-overflow-scrolling:touch; max-height:78vh; }
+  .map { display:block; width:100%; height:auto; }
+  .seat { cursor:pointer; transition:fill .2s; }
+  .seat.free { fill:var(--free); stroke:#c9b6a3; } .seat.taken { fill:var(--taken); stroke:#c46a92; } .seat.hadir { fill:var(--hadir); stroke:#2c6e49; }
+  .seat.mine { fill:#f6d68a; stroke:#b8875c; } .seat.sel { fill:var(--sel); stroke:#000; } .seat.blocked { opacity:.45; }
+  .seat.pulse { animation:pulse 1s ease-in-out 3; } @keyframes pulse { 50% { stroke:#e3307f; stroke-width:5; } }
+  .ust { cursor:pointer; fill:#fff; stroke:#d9c9b8; } .ust.a { fill:var(--taken); stroke:#d08aa8; } .ust.h { fill:var(--hadir); stroke:#2c6e49; }
+  .bk { fill:#b9a28c; pointer-events:none; }
+  .tbl { fill:#e7d3bd; stroke:#c8ab8c; }
+  .map text { font-family:"Plus Jakarta Sans",sans-serif; pointer-events:none; }
+
+  .dock { position:fixed; left:0; right:0; bottom:0; z-index:30; background:#fff; box-shadow:0 -8px 26px rgba(60,40,25,.14); border-radius:20px 20px 0 0; padding:12px 14px calc(12px + env(safe-area-inset-bottom)); transform:translateY(110%); transition:transform .3s; }
+  .dock.on { transform:none; }
+  .dock .in { max-width:1000px; margin:0 auto; display:flex; align-items:center; gap:10px; }
+  .dock .t { flex:1; min-width:0; font-size:13px; color:var(--ink2); }
+  .dock .t b { display:block; color:var(--ink); font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+  /* pengaturan */
+  .grid2 { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:10px; }
+  label.l { display:block; font-size:12.5px; font-weight:700; color:var(--ink2); margin:10px 0 5px; }
+  label.l small { font-weight:500; color:var(--muted); }
+  .input, select.input { width:100%; padding:11px 12px; font-size:15px; border:1.5px solid var(--line); border-radius:12px; background:#fcfaf7; outline:none; color:var(--ink); }
+  .input:focus { border-color:var(--gold); background:#fff; }
+  .step { display:flex; align-items:stretch; border:1.5px solid var(--line); border-radius:12px; overflow:hidden; background:#fcfaf7; }
+  .step button { width:40px; border:0; background:#f3efe9; font-size:18px; font-weight:700; cursor:pointer; color:var(--ink); }
+  .step button:active { background:#e8dfd4; }
+  .step input { flex:1; width:100%; min-width:0; border:0; background:transparent; text-align:center; font-size:15px; font-weight:700; padding:10px 0; outline:none; }
+  .seg { display:flex; background:#f3efe9; border-radius:12px; padding:3px; gap:3px; }
+  .seg button { flex:1; border:0; background:transparent; padding:9px 6px; border-radius:9px; font-size:13px; font-weight:700; color:var(--ink2); cursor:pointer; }
+  .seg button.on { background:#fff; color:var(--ink); box-shadow:0 2px 6px rgba(60,40,25,.12); }
+  .tog { display:flex; align-items:center; gap:10px; margin-top:12px; font-size:13.5px; font-weight:600; cursor:pointer; }
+  .tog small { display:block; font-weight:500; color:var(--ink2); font-size:12px; }
+  .zcard { border:1.5px solid var(--line); border-radius:16px; padding:12px; margin-bottom:10px; background:#fff; }
+  .zhead { display:flex; align-items:center; gap:8px; }
+  .zhead b { flex:1; font-size:15px; }
+  .zhead .cap { font-size:12px; font-weight:800; color:var(--sage); background:var(--sage-soft); padding:4px 9px; border-radius:99px; white-space:nowrap; }
+  .ib { width:32px; height:32px; border-radius:9px; border:0; background:#f3efe9; cursor:pointer; font-size:14px; color:var(--ink2); }
+  .ib:disabled { opacity:.35; }
+  .hint { font-size:12px; color:var(--muted); margin-top:5px; line-height:1.4; }
+  .ex { font-size:12px; color:var(--ink2); margin-top:10px; background:#faf6f1; border-radius:10px; padding:7px 10px; }
+  .ex code { background:#2f2520; color:#fff; border-radius:6px; padding:1px 6px; font-size:11.5px; }
+  .sumbar { position:sticky; top:0; z-index:20; background:#fff; border-radius:16px; box-shadow:var(--shadow); padding:12px 14px; margin-bottom:12px; }
+  .sumrow { display:flex; justify-content:space-between; gap:10px; font-size:13px; color:var(--ink2); flex-wrap:wrap; }
+  .sumrow b { color:var(--ink); }
+  .cbar { height:8px; background:var(--line); border-radius:9px; overflow:hidden; margin:8px 0; }
+  .cbar i { display:block; height:100%; background:linear-gradient(90deg,var(--sage),#6cb38a); transition:width .3s; }
+  .cbar.full i { background:linear-gradient(90deg,#c98b2e,#e0a84a); } .cbar.over i { background:var(--rose); }
+  .fit { font-weight:800; } .fit.ok { color:var(--sage); } .fit.no { color:var(--rose); }
+  .sbtns { display:flex; gap:8px; margin-top:10px; }
+  .sbtns .btn { flex:1; }
+
+  .ov { position:fixed; inset:0; background:rgba(30,22,18,.45); z-index:50; opacity:0; pointer-events:none; transition:opacity .25s; }
+  .ov.on { opacity:1; pointer-events:auto; }
+  .sheet { position:fixed; left:0; right:0; bottom:0; z-index:51; background:#fff; border-radius:24px 24px 0 0; max-height:88vh; overflow:auto; padding:8px 16px calc(14px + env(safe-area-inset-bottom)); transform:translateY(105%); transition:transform .35s cubic-bezier(.2,.9,.25,1); max-width:640px; margin:0 auto; }
+  .sheet.on { transform:none; }
+  .grab { width:42px; height:5px; border-radius:9px; background:var(--line); margin:4px auto 10px; }
+  .sheet h3 { margin:2px 0 10px; font-size:17px; text-align:center; }
+  .info dl { display:grid; grid-template-columns:auto 1fr; gap:6px 12px; margin:0 0 12px; font-size:14px; }
+  .info dt { color:var(--ink2); } .info dd { margin:0; font-weight:600; }
+  .err { color:var(--rose); font-size:13px; min-height:18px; margin-top:8px; }
+  .toast { position:fixed; left:50%; top:16px; transform:translate(-50%,-20px); background:#2f2520; color:#fff; padding:11px 16px; border-radius:14px; font-size:14px; z-index:60; opacity:0; pointer-events:none; transition:.25s; max-width:calc(100vw - 28px); text-align:center; box-shadow:0 10px 26px rgba(0,0,0,.25); line-height:1.4; }
+  .toast.on { opacity:1; transform:translate(-50%,0); } .toast.bad { background:var(--rose); }
+  .skel { height:120px; border-radius:18px; background:linear-gradient(90deg,#efe8df,#f8f3ee,#efe8df); background-size:200% 100%; animation:sk 1.2s infinite; margin-bottom:12px; }
+  @keyframes sk { to { background-position:-200% 0; } }
+  @media (min-width:820px) { .layout { display:grid; grid-template-columns:330px 1fr; gap:12px; align-items:start; } .side { position:sticky; top:12px; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="in">
+    <div><div class="eyebrow" id="hdEyebrow">Denah Kursi</div><div class="couple">Adam &amp; Kiki</div></div>
+    <div class="hbtns">
+      <button class="hbtn" id="btnSetting" type="button">⚙️ Atur Denah</button>
+      <button class="hbtn" id="btnRefresh" type="button" aria-label="Muat ulang">↻</button>
+      <a class="hbtn" href="kirim.html">Daftar tamu</a>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="card hidden" id="vAuth">
+    <h3>Masuk panitia</h3>
+    <p style="color:var(--ink2);font-size:13px;margin:0">Masukkan PIN petugas (sama dengan aplikasi scan).</p>
+    <label class="l">PIN</label>
+    <input class="input" id="inPin" type="password" inputmode="numeric" autocomplete="current-password">
+    <div class="err" id="authErr"></div>
+    <button class="btn btn-dark" id="btnLogin" type="button" style="width:100%">Masuk</button>
+  </section>
+
+  <div id="loading"><div class="skel"></div><div class="skel" style="height:420px"></div></div>
+
+  <!-- ============ DENAH (atur kursi tamu & pantau) ============ -->
+  <section id="vApp" class="hidden">
+    <div class="note hidden" id="noteSetup"></div>
+    <div class="layout">
+      <div class="side">
+        <div class="card">
+          <div class="stats" id="stats"></div>
+          <div class="live"><span><span class="dot" id="liveDot"></span>Pantau langsung (tiap 15 dtk)</span><button class="sw" id="liveSw" type="button" role="switch" aria-checked="false" aria-label="Pantau langsung"></button></div>
+        </div>
+        <div class="card">
+          <div class="lbl">1. Cari &amp; pilih tamu</div>
+          <div class="combo" id="combo">
+            <svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input class="cin" id="q" type="search" placeholder="Ketik nama tamu…" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="glist">
+            <button class="clr hidden" id="qClr" type="button" aria-label="Hapus">×</button>
+            <div class="panel hidden" id="panel"><div class="chips" id="chips"></div><div class="glist" id="glist" role="listbox"></div></div>
+          </div>
+          <div class="cursub" id="pkSub"></div>
+          <div id="selBox" class="hidden">
+            <div class="lbl" style="margin-top:14px">2. Centang kursi di denah</div>
+            <div class="selinfo" id="selInfo"></div>
+            <div class="row-btn" id="freeBtns"></div>
+            <div class="row-btn">
+              <button class="btn btn-light" id="btnClear" type="button">Kosongkan</button>
+              <button class="btn btn-light" id="btnCancel" type="button">Batal</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="legend">
+          <span><i style="background:var(--free)"></i>Kosong</span><span><i style="background:var(--taken);border-color:#c46a92"></i>Terisi</span>
+          <span><i style="background:var(--hadir);border-color:#2c6e49"></i>Sudah hadir</span><span><i style="background:#f6d68a;border-color:#b8875c"></i>Kursi tamu terpilih</span>
+          <span><i style="background:var(--sel);border-color:#000"></i>Dicentang</span>
+        </div>
+        <div class="zoom"><span id="mapSize"></span><button type="button" id="zOut" aria-label="Perkecil">−</button><button type="button" id="zIn" aria-label="Perbesar">+</button></div>
+        <div class="mapbox" id="mapbox"><svg class="map" id="map" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Denah kursi"></svg></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PENGATURAN DENAH ============ -->
+  <section id="vSet" class="hidden">
+    <div class="sumbar">
+      <div class="sumrow"><span>Total kursi <b id="sumSeats">0</b> / <b id="sumCap">–</b> kapasitas gedung</span><span id="sumLeft"></span></div>
+      <div class="cbar" id="cbar"><i id="cbarFill"></i></div>
+      <div class="sumrow"><span>Butuh ruang ± <b id="sumNeed"></b></span><span id="sumFit"></span></div>
+      <div class="sbtns"><button class="btn btn-light" id="setCancel" type="button">Batal</button><button class="btn btn-sage" id="setSave" type="button">💾 Simpan denah</button></div>
+    </div>
+    <div class="layout">
+      <div class="side">
+        <div class="card">
+          <h3>🏛️ Gedung &amp; acara</h3>
+          <label class="l">Tamu dari acara</label>
+          <select class="input" id="fAcara"></select>
+          <div class="grid2">
+            <div><label class="l">Kapasitas gedung <small>(kursi)</small></label><input class="input" id="fCap" type="number" min="0" inputmode="numeric" placeholder="mis. 450"></div>
+            <div><label class="l">Nama panggung</label><input class="input" id="fStage" maxlength="30" placeholder="Pelaminan"></div>
+          </div>
+          <label class="l">Ukuran venue <small>(meter, opsional)</small></label>
+          <div class="grid2">
+            <input class="input" id="fVW" type="number" min="0" step="0.5" inputmode="decimal" placeholder="Lebar (m)">
+            <input class="input" id="fVL" type="number" min="0" step="0.5" inputmode="decimal" placeholder="Panjang (m)">
+          </div>
+          <div class="hint">Lebar = sisi yang sejajar panggung. Panjang = dari panggung sampai pintu belakang. Perhitungan memakai ukuran standar: kursi 50 cm, jarak baris 95 cm, jalan tengah 1,6 m, jalan samping 1,2 m.</div>
+        </div>
+        <div class="card">
+          <h3>🍽️ Meja prasmanan</h3>
+          <label class="tog"><button class="sw" id="fBuf" type="button" role="switch" aria-label="Pakai meja prasmanan"></button><span>Pakai meja prasmanan<small>Matikan jika memakai piring terbang / tanpa buffet</small></span></label>
+          <div id="bufOpts">
+            <label class="l">Posisi</label>
+            <div class="seg" id="fBufPos"><button type="button" data-v="depan-samping">Depan samping</button><button type="button" data-v="belakang-samping">Belakang samping</button><button type="button" data-v="belakang">Belakang</button></div>
+            <label class="l">Panjang meja <small>(meter per sisi)</small></label>
+            <div class="step" data-f="bufLen"><button type="button" data-d="-1">−</button><input id="fBufLen" type="number" min="2" max="30" inputmode="numeric"><button type="button" data-d="1">+</button></div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <h3>🪑 Zona / kategori kursi <small style="font-weight:500;color:var(--muted)">(urutan dari depan ke belakang)</small></h3>
+          <div id="zones"></div>
+          <button class="btn btn-dark" id="addZone" type="button" style="width:100%">＋ Tambah zona</button>
+        </div>
+        <div class="card">
+          <h3>👀 Pratinjau</h3>
+          <div class="mapbox" style="max-height:none"><svg class="map" id="pmap" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Pratinjau denah"></svg></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="dock" id="dock"><div class="in">
+  <div class="t"><b id="dkName"></b><span id="dkSub"></span></div>
+  <button class="btn btn-sage" id="btnInput" type="button">✓ Input Kursi</button>
+</div></div>
+<div class="ov" id="ov"></div>
+<div class="sheet" id="shInfo" role="dialog" aria-modal="true"><div class="grab"></div><h3 id="inTitle"></h3><div class="info" id="inBody"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var mem = {};
+  var store = function (k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) { if (v == null) delete mem[k]; else mem[k] = v; } };
+  var load = function (k) { try { return localStorage.getItem(k); } catch (e) { return mem[k] || null; } };
+  var API = (window.GB_CONFIG || {}).API_URL || load('gb_api') || '';
+  var PIN = load('gb_pin') || '';
+  var clone = function (o) { return JSON.parse(JSON.stringify(o)); };
+
+  /* ---------- denah bawaan (contoh) ---------- */
+  var DEFAULT = {
+    versi: 1, acara: 'Ngunduh Mantu', panggung: 'Pelaminan', kapasitas: 450, venue: { lebar: 0, panjang: 0 },
+    prasmanan: { aktif: false, posisi: 'belakang-samping', panjang: 6 },
+    zona: [
+      { id: 'z1', nama: 'Keluarga', tipe: 'bundar', meja: 5, kursi: 7, kode: 'Meja', bernomor: true, pembatas: true },
+      { id: 'z2', nama: 'VIP', tipe: 'baris', blok: 2, baris: 7, pola: '2,3', hadap: 'depan', kode: 'Kursi-VIP', bernomor: true, nomor: 'ganjil-kanan', maks: 0, pembatas: false },
+      { id: 'z3', nama: 'Umum', tipe: 'baris', blok: 2, baris: 18, pola: '5,5', hadap: 'depan', kode: 'Kursi-Umum', bernomor: false, nomor: 'ganjil-kanan', maks: 345, pembatas: false }
+    ]
+  };
+  var CFG = clone(DEFAULT), SAVED = false, ACARA = [], GUESTS = [], OWNER = {}, LAY = null;
+  var CUR = null, SEL = [], FILT = 'semua', ZOOM = 1, liveT = null, EDIT = null;
+
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function api(action, data) {
+    data = data || {}; data.action = action; data.pin = PIN;
+    return fetch(API, { method: 'POST', body: JSON.stringify(data) })
+      .then(function (r) { return r.text(); }, function () { throw new Error('Tidak ada koneksi internet / server tidak terjangkau.'); })
+      .then(function (t) {
+        var j; try { j = JSON.parse(t); } catch (e) { throw new Error('Server tidak merespons dengan benar. Pastikan Code.gs versi terbaru sudah di-deploy (New version).'); }
+        if (!j.ok) { if (/Aksi tidak dikenal/.test(j.error)) throw new Error('Code.gs belum diperbarui. Tempel Code.gs terbaru lalu Deploy › Manage deployments › ✏️ › New version.'); throw new Error(j.error || 'Gagal'); }
+        return j.data;
+      });
+  }
+  var tT; function toast(m, bad) { var t = $('toast'); t.textContent = m; t.classList.toggle('bad', !!bad); t.classList.add('on'); clearTimeout(tT); tT = setTimeout(function () { t.classList.remove('on'); }, bad ? 3800 : 2600); }
+  function show(v) { ['vAuth', 'vApp', 'vSet'].forEach(function (x) { $(x).classList.toggle('hidden', x !== 'v' + v[0].toUpperCase() + v.slice(1)); }); $('loading').classList.toggle('hidden', v !== 'load'); $('btnSetting').classList.toggle('hidden', v !== 'app'); if (v !== 'app') $('dock').classList.remove('on'); }
+  function fmtM(u) { return (u / U).toFixed(1).replace('.', ',') + ' m'; }
+
+  /* =====================================================================
+     MESIN DENAH — menghasilkan posisi kursi dari pengaturan
+     satuan gambar: 40 = 1 meter
+     ===================================================================== */
+  var U = 40, P = 20, CH = 16, ROWP = 38, AISLE = 64, SIDE = 48, ZGAP = 34, BUFW = 80;
+  function polaArr(z) { var a = String(z.pola || '').split(/[^0-9]+/).map(function (x) { return parseInt(x, 10) || 0; }).filter(function (x) { return x > 0; }); return a.length ? a : [5]; }
+  function polaLen(a) { return a.reduce(function (s, x) { return s + x; }, 0) + a.length - 1; }
+  function tableGeom(n) { var r = Math.max(20, Math.min(52, n * 4.4)), cr = r + 15; return { r: r, cr: cr, F: 2 * cr + CH + 30 }; }
+  function zoneWidth(z) {
+    if (z.tipe === 'bundar') return tableGeom(z.kursi).F;
+    var L = polaLen(polaArr(z)) * P;
+    if (z.hadap === 'aisle') return 2 * z.baris * ROWP + AISLE;
+    return z.blok === 2 ? 2 * L + AISLE : L;
+  }
+  function zoneSeatCount(z) {
+    if (z.tipe === 'bundar') return z.meja * z.kursi;
+    var per = polaArr(z).reduce(function (s, x) { return s + x; }, 0) * (z.hadap === 'aisle' || z.blok === 2 ? 2 : 1);
+    var n = per * z.baris; return z.maks > 0 ? Math.min(z.maks, n) : n;
+  }
+  function totalSeats(cfg) { return cfg.zona.reduce(function (s, z) { return s + zoneSeatCount(z); }, 0); }
+
+  function layout(cfg) {
+    var o = [], seats = [], zinfo = [];
+    var buf = cfg.prasmanan && cfg.prasmanan.aktif ? cfg.prasmanan : null;
+    var lane = buf && buf.posisi !== 'belakang' ? BUFW : 0;
+    var needInner = cfg.zona.reduce(function (m, z) { return Math.max(m, zoneWidth(z)); }, 260);
+    var needW = needInner + 2 * SIDE + 2 * lane;
+    var vW = (cfg.venue && cfg.venue.lebar > 0) ? cfg.venue.lebar * U : 0;
+    var W = Math.max(needW, vW || Math.max(needW, 15 * U));
+    var x0 = lane + SIDE, x1 = W - lane - SIDE, CX = W / 2, innerW = x1 - x0;
+    var add = function (s) { o.push(s); };
+    var text = function (x, y, t, sz, col, w, anc, extra) { add('<text x="' + x + '" y="' + y + '" font-size="' + (sz || 12) + '" fill="' + (col || '#8a7768') + '" font-weight="' + (w || 600) + '" text-anchor="' + (anc || 'middle') + '"' + (extra || '') + '>' + esc(t) + '</text>'); };
+    var y = 20;
+    add('<rect x="' + (CX - 140) + '" y="' + y + '" width="280" height="80" rx="14" fill="#e3307f" fill-opacity=".14" stroke="#e3307f" stroke-width="2"/>');
+    text(CX, y + 47, String(cfg.panggung || 'Panggung').toUpperCase(), 16, '#b0185a', 800);
+    y += 80 + 46;
+    var zoneTop = y;
+    cfg.zona.forEach(function (z, zi) {
+      var info = { z: z, codes: [], cap: 0 }, numbered = z.bernomor !== false;
+      text(x0, y + 4, z.nama + ' · ' + zoneSeatCount(z) + ' kursi', 12, '#8a6238', 800, 'start');
+      y += 18;
+      var seat = function (k, x, sy, back) {
+        var code = numbered ? k : z.kode;
+        seats.push({ k: code, x: x, y: sy, z: zi });
+        info.cap++;
+        if (numbered) info.codes.push(k);
+        var cls = numbered ? 'seat free' : 'ust', attr = numbered ? ' data-k="' + esc(k) + '"' : ' data-z="' + zi + '" data-i="' + (info.cap - 1) + '"';
+        add('<rect class="' + cls + '"' + attr + ' x="' + (x - CH / 2) + '" y="' + (sy - CH / 2) + '" width="' + CH + '" height="' + CH + '" rx="4" stroke-width="1.4"><title>' + esc(numbered ? k : z.kode + ' (bebas)') + '</title></rect>');
+        if (back === 'b') add('<rect class="bk" x="' + (x - CH / 2) + '" y="' + (sy + CH / 2 + 1) + '" width="' + CH + '" height="3" rx="1"/>');
+        if (back === 'l') add('<rect class="bk" x="' + (x - CH / 2 - 4) + '" y="' + (sy - CH / 2) + '" width="3" height="' + CH + '" rx="1"/>');
+        if (back === 'r') add('<rect class="bk" x="' + (x + CH / 2 + 1) + '" y="' + (sy - CH / 2) + '" width="3" height="' + CH + '" rx="1"/>');
+      };
+      var stbl = function (x, sy, w, h) { add('<rect class="tbl" x="' + (x - w / 2) + '" y="' + (sy - h / 2) + '" width="' + w + '" height="' + h + '" rx="3" stroke-width="1"/>'); };
+      if (z.tipe === 'bundar') {
+        var g = tableGeom(z.kursi), per = Math.max(1, Math.floor(innerW / g.F)), rows = Math.ceil(z.meja / per), t = 0;
+        for (var r = 0; r < rows; r++) {
+          var nIn = Math.min(per, z.meja - r * per), sx = CX - nIn * g.F / 2 + g.F / 2, ty = y + g.F / 2;
+          for (var c = 0; c < nIn; c++) {
+            t++; var tx = sx + c * g.F;
+            add('<circle cx="' + tx + '" cy="' + ty + '" r="' + g.r + '" class="tbl" stroke-width="2"/>');
+            text(tx, ty + 4, z.kode + ' ' + t, 10.5, '#6f5640', 800);
+            for (var s = 1; s <= z.kursi; s++) { var a = -Math.PI / 2 + (s - 1) * 2 * Math.PI / z.kursi; seat(z.kode + '-' + t + '-' + s, tx + g.cr * Math.cos(a), ty + g.cr * Math.sin(a)); }
+          }
+          y += g.F;
+        }
+      } else {
+        var pola = polaArr(z), L = polaLen(pola), cap = z.maks > 0 ? z.maks : Infinity, made = 0;
+        var rowSeats = function (k, side) { // side: 1 kanan, -1 kiri, 0 tunggal
+          var list = [];
+          if (z.hadap === 'aisle') {
+            var colX = CX + side * (AISLE / 2 + ROWP / 2 + k * ROWP), sy0 = y + P / 2, j = 0;
+            pola.forEach(function (n, gi) { for (var i = 0; i < n; i++) list.push({ x: colX, y: sy0 + (j++) * P, back: side > 0 ? 'r' : 'l' }); if (gi < pola.length - 1) { list.push({ tbl: 1, x: colX, y: sy0 + (j++) * P }); } });
+          } else {
+            var ry = y + k * ROWP + ROWP / 2, xs, dir;
+            if (side === 0) { xs = CX - L * P / 2 + P / 2; dir = 1; } else { xs = CX + side * (AISLE / 2 + P / 2); dir = side; }
+            var jj = 0;
+            pola.forEach(function (n, gi) { for (var i = 0; i < n; i++) list.push({ x: xs + dir * (jj++) * P, y: ry, back: 'b' }); if (gi < pola.length - 1) list.push({ tbl: 1, x: xs + dir * (jj++) * P, y: ry }); });
+          }
+          return list;
+        };
+        var nrows = z.baris, two = z.hadap === 'aisle' || z.blok === 2;
+        var rowLabel = function (rowNo, k, side) {
+          if (!numbered) return;
+          if (z.hadap === 'aisle') text(CX + side * (AISLE / 2 + ROWP / 2 + k * ROWP), y - 3, 'R' + rowNo, 9.5, '#8a6238', 800);
+          else { var lx = side === 0 ? CX - L * P / 2 - 8 : CX + side * (AISLE / 2 + L * P + 6); text(lx, y + k * ROWP + ROWP / 2 + 3.5, 'R' + rowNo, 9.5, '#8a6238', 800, side > 0 ? 'start' : 'end'); }
+        };
+        for (var k = 0; k < nrows && made < cap; k++) {
+          var sides = two ? (z.nomor === 'ganjil-kiri' ? [-1, 1] : [1, -1]) : [0];
+          if (two && z.nomor === 'sama') sides = [-1, 1];
+          sides.forEach(function (side, si) {
+            if (made >= cap) return;
+            var list = rowSeats(k, side), rowNo, n = 1;
+            if (!two) rowNo = k + 1;
+            else if (z.nomor === 'sama') rowNo = k + 1;
+            else rowNo = 2 * k + 1 + si;
+            if (two && z.nomor === 'sama') { n = side < 0 ? 1 : polaArr(z).reduce(function (s, x) { return s + x; }, 0) + 1; if (side < 0 && z.hadap !== 'aisle') list = list.slice().reverse(); }
+            var drew = false;
+            list.forEach(function (it) {
+              if (it.tbl) { if (made < cap) stbl(it.x, it.y, z.hadap === 'aisle' ? 14 : 14, 14); return; }
+              if (made >= cap) return;
+              seat(z.kode + '-' + rowNo + '-' + (n++), it.x, it.y, it.back); made++; drew = true;
+            });
+            if (drew) rowLabel(rowNo, k, side);
+          });
+        }
+        y += z.hadap === 'aisle' ? L * P + 4 : nrows * ROWP;
+        if (z.hadap === 'aisle') add('<text x="' + CX + '" y="' + (y - L * P / 2) + '" font-size="10" fill="#b9a594" text-anchor="middle" transform="rotate(-90 ' + CX + ' ' + (y - L * P / 2) + ')">menghadap aisle</text>');
+      }
+      zinfo.push(info);
+      if (z.pembatas && zi < cfg.zona.length - 1) {
+        var ry = y + 18, posts = [];
+        for (var px = x0; px < CX - AISLE / 2; px += 52) posts.push(px);
+        posts.push(CX - AISLE / 2);
+        for (var i = 0; i < posts.length - 1; i++) [1, -1].forEach(function (m) { var a1 = m > 0 ? posts[i] : W - posts[i], a2 = m > 0 ? posts[i + 1] : W - posts[i + 1]; add('<path d="M' + a1 + ' ' + ry + ' Q' + ((a1 + a2) / 2) + ' ' + (ry + 9) + ' ' + a2 + ' ' + ry + '" stroke="#b8875c" stroke-width="3" fill="none"/>'); });
+        posts.forEach(function (p) { [p, W - p].forEach(function (q) { add('<circle cx="' + q + '" cy="' + ry + '" r="5" fill="#d8b48a" stroke="#9b7046" stroke-width="1.5"/>'); }); });
+        y += 36;
+      }
+      y += ZGAP;
+    });
+    var zoneBot = y - ZGAP;
+    // prasmanan
+    if (buf) {
+      var len = Math.max(2, buf.panjang || 6) * U;
+      if (buf.posisi === 'belakang') {
+        y += 10;
+        var bw = Math.min(len * 2, innerW);
+        add('<rect x="' + (CX - bw / 2) + '" y="' + y + '" width="' + bw + '" height="32" rx="6" fill="#f3dcc0" stroke="#c49a6c" stroke-width="2"/>');
+        text(CX, y + 21, 'MEJA PRASMANAN', 12, '#8a5a2b', 800);
+        y += 32 + 60;
+      } else {
+        var span = Math.min(len, Math.max(60, zoneBot - zoneTop)), by = buf.posisi === 'depan-samping' ? zoneTop : zoneBot - span;
+        [lane / 2 - 16, W - lane / 2 - 16].forEach(function (bx) {
+          add('<rect x="' + (bx + 4) + '" y="' + by + '" width="24" height="' + span + '" rx="6" fill="#f3dcc0" stroke="#c49a6c" stroke-width="2"/>');
+          var mx = bx + 16, my = by + span / 2;
+          add('<text x="' + mx + '" y="' + my + '" font-size="10.5" fill="#8a5a2b" font-weight="800" text-anchor="middle" transform="rotate(-90 ' + mx + ' ' + my + ')">PRASMANAN</text>');
+        });
+      }
+    }
+    add('<rect x="' + (CX - 60) + '" y="' + (y + 4) + '" width="120" height="28" rx="8" fill="#efe5da"/>');
+    text(CX, y + 23, 'PINTU MASUK', 11.5, '#8a7768', 800);
+    y += 44;
+    var H = Math.max(y, cfg.venue && cfg.venue.panjang > 0 ? cfg.venue.panjang * U : 0);
+    var head = '<rect width="' + W + '" height="' + H + '" fill="#faf5ef"/>';
+    if (vW || (cfg.venue && cfg.venue.panjang > 0)) head += '<rect x="2" y="2" width="' + (W - 4) + '" height="' + (H - 4) + '" fill="none" stroke="#b8875c" stroke-width="2" stroke-dasharray="10 6" rx="6"/>';
+    return { svg: head + o.join(''), W: W, H: H, needW: needW, needH: y, seats: seats, zinfo: zinfo, total: seats.length };
+  }
+  function fitInfo(cfg, L) {
+    var v = cfg.venue || {}, okW = !(v.lebar > 0) || L.needW <= v.lebar * U + 0.01, okH = !(v.panjang > 0) || L.needH <= v.panjang * U + 0.01;
+    var cap = cfg.kapasitas > 0 ? cfg.kapasitas : 0;
+    return { okW: okW, okH: okH, fits: okW && okH, cap: cap, over: cap > 0 && L.total > cap };
+  }
+  function drawSvg(el, L) { el.setAttribute('viewBox', '0 0 ' + L.W + ' ' + L.H); el.innerHTML = L.svg; }
+
+  /* =====================================================================
+     DENAH — atur kursi tamu & pantau
+     ===================================================================== */
+  function freeCodes() { return CFG.zona.filter(function (z) { return z.bernomor === false; }).map(function (z) { return z.kode; }); }
+  function zoneOfFree(code) { for (var i = 0; i < CFG.zona.length; i++) if (CFG.zona[i].bernomor === false && CFG.zona[i].kode === code) return i; return -1; }
+  function kursiOf(g) { return String(g.meja || '').split(/[,;\n]+/).map(function (x) { return x.trim(); }).filter(Boolean); }
+  function invited(g) { if (!CFG.acara) return true; if (!g.acara || !g.acara.length) return true; var a = CFG.acara.toLowerCase(); return g.acara.some(function (x) { x = String(x).toLowerCase(); return x.indexOf(a) >= 0 || a.indexOf(x) >= 0; }); }
+  function isHadir(g) { return g.status === 'Hadir'; }
+  function pax(g) { return g.jumlahUndangan || 1; }
+  function isFreeSel() { return SEL.length === 1 && freeCodes().indexOf(SEL[0]) >= 0; }
+
+  function renderMap() {
+    LAY = layout(CFG); drawSvg($('map'), LAY);
+    $('mapSize').textContent = 'Denah ± ' + fmtM(LAY.W) + ' × ' + fmtM(LAY.H);
+    $('hdEyebrow').textContent = 'Denah Kursi' + (CFG.acara ? ' • ' + CFG.acara : '');
+    setZoom(ZOOM);
+  }
+  function rebuildOwners() { OWNER = {}; var fc = freeCodes(); GUESTS.forEach(function (g) { kursiOf(g).forEach(function (k) { if (fc.indexOf(k) < 0) OWNER[k] = g; }); }); }
+  function paint() {
+    if (!LAY) return;
+    Array.prototype.forEach.call(document.querySelectorAll('#map .seat'), function (el) {
+      var k = el.getAttribute('data-k'), g = OWNER[k], cls = 'seat ';
+      if (CUR && SEL.indexOf(k) >= 0) cls += 'sel';
+      else if (g && CUR && g.id === CUR.id) cls += 'mine';
+      else if (g) cls += isHadir(g) ? 'hadir' : 'taken';
+      else cls += 'free';
+      if (CUR && g && g.id !== CUR.id) cls += ' blocked';
+      el.setAttribute('class', cls);
+    });
+    var st = [];
+    LAY.zinfo.forEach(function (zi, i) {
+      var z = zi.z, used, hadir;
+      if (z.bernomor === false) {
+        var gs = GUESTS.filter(function (g) { return kursiOf(g).indexOf(z.kode) >= 0; });
+        used = gs.reduce(function (s, g) { return s + pax(g); }, 0);
+        hadir = gs.filter(isHadir).reduce(function (s, g) { return s + (g.jumlahHadir || pax(g)); }, 0);
+        var sel = CUR && isFreeSel() && SEL[0] === z.kode && kursiOf(CUR).indexOf(z.kode) < 0 ? pax(CUR) : 0;
+        Array.prototype.forEach.call(document.querySelectorAll('#map .ust[data-z="' + i + '"]'), function (el) {
+          var n = +el.getAttribute('data-i');
+          el.setAttribute('class', 'ust' + (n < hadir ? ' h' : n < used + sel ? ' a' : ''));
+        });
+      } else {
+        used = zi.codes.filter(function (k) { return OWNER[k]; }).length;
+        hadir = zi.codes.filter(function (k) { return OWNER[k] && isHadir(OWNER[k]); }).length;
+      }
+      st.push('<div class="stat"><b>' + used + '<small>/' + zi.cap + '</small></b><span>' + esc(z.nama) + (z.bernomor === false ? ' (pax)' : '') + '</span><em>' + (used > zi.cap ? '⚠️ penuh' : hadir ? hadir + ' hadir' : '') + '</em></div>');
+    });
+    var belum = GUESTS.filter(function (g) { return !kursiOf(g).length; }).length;
+    var orphan = GUESTS.filter(function (g) { return kursiOf(g).some(function (k) { return freeCodes().indexOf(k) < 0 && !LAY.seats.some(function (s) { return s.k === k; }); }); }).length;
+    st.push('<div class="stat"><b>' + belum + '</b><span>Tamu belum dapat kursi</span>' + (orphan ? '<em style="color:var(--rose)">' + orphan + ' kursi tak ada di denah</em>' : '') + '</div>');
+    $('stats').innerHTML = st.join('');
+  }
+
+  function loadAll(silent) {
+    if (!API || !PIN) { show('auth'); if (!API) $('authErr').textContent = 'URL server belum diatur. Buka aplikasi scan dulu sekali.'; return Promise.resolve(); }
+    if (!silent) show('load');
+    return api('admin').then(function (d) {
+      ACARA = d.acara || [];
+      if (d.denah && d.denah.zona) { CFG = d.denah; SAVED = true; } else { SAVED = false; }
+      GUESTS = (d.guests || []).filter(invited).sort(function (a, b) { return a.nama.localeCompare(b.nama, 'id'); });
+      rebuildOwners();
+      if (CUR) { CUR = byId(CUR.id); if (!CUR) SEL = []; }
+      var n = $('noteSetup');
+      n.classList.toggle('hidden', SAVED);
+      n.innerHTML = SAVED ? '' : '👋 Denah belum diatur. Yang tampil adalah <b>contoh</b>. Tekan <b>⚙️ Atur Denah</b> untuk mengisi kapasitas gedung, ukuran venue, zona kursi, dan prasmanan, lalu simpan.';
+      if (!$('vSet').classList.contains('hidden')) return;
+      renderMap(); paint(); renderSel(); show('app');
+    }).catch(function (e) {
+      if (/PIN salah/.test(e.message)) { store('gb_pin', null); PIN = ''; show('auth'); $('authErr').textContent = 'PIN salah / sudah diganti.'; return; }
+      if (silent) { toast(e.message, true); return; }
+      show('auth'); $('authErr').textContent = e.message;
+    });
+  }
+  function byId(id) { for (var i = 0; i < GUESTS.length; i++) if (GUESTS[i].id === id) return GUESTS[i]; return null; }
+  $('btnLogin').onclick = function () {
+    PIN = $('inPin').value.trim(); if (!PIN) return;
+    var b = this; b.disabled = true; $('authErr').textContent = 'Memuat…';
+    api('admin').then(function () { store('gb_pin', PIN); $('authErr').textContent = ''; return loadAll(); })
+      .catch(function (e) { $('authErr').textContent = /PIN salah/.test(e.message) ? 'PIN salah.' : e.message; })
+      .then(function () { b.disabled = false; });
+  };
+  $('inPin').onkeydown = function (e) { if (e.key === 'Enter') $('btnLogin').click(); };
+  $('btnRefresh').onclick = function () { if (dirty()) { toast('Input atau batalkan pilihan kursi dulu'); return; } loadAll(true).then(function () { toast('Denah diperbarui'); }); };
+
+  /* ---------- cari & pilih tamu ---------- */
+  var CHIPS = [['semua', 'Semua'], ['belum', 'Belum dapat kursi'], ['sudah', 'Sudah dapat kursi'], ['hadir', 'Sudah hadir']];
+  function openPanel() { renderList(); $('panel').classList.remove('hidden'); $('q').setAttribute('aria-expanded', 'true'); }
+  function closePanel() { $('panel').classList.add('hidden'); $('q').setAttribute('aria-expanded', 'false'); }
+  function openPick() { $('q').value = ''; $('q').focus(); openPanel(); }
+  $('q').onfocus = function () { if (CUR && $('q').value === CUR.nama) $('q').select(); openPanel(); };
+  $('q').oninput = function () { $('qClr').classList.toggle('hidden', !this.value); openPanel(); };
+  $('q').onkeydown = function (e) {
+    if (e.key === 'Escape') { closePanel(); this.blur(); }
+    if (e.key === 'Enter') { var f = $('glist').querySelector('.gi'); if (f) { e.preventDefault(); choose(byId(f.dataset.id)); } }
+  };
+  $('qClr').onclick = function () { $('q').value = ''; this.classList.add('hidden'); $('q').focus(); openPanel(); };
+  document.addEventListener('click', function (e) { if (e.target.isConnected && !$('combo').contains(e.target)) { closePanel(); if (CUR) $('q').value = CUR.nama; } });
+  function renderList() {
+    $('chips').innerHTML = CHIPS.map(function (c) { return '<button type="button" class="chip' + (FILT === c[0] ? ' on' : '') + '" data-f="' + c[0] + '">' + c[1] + '</button>'; }).join('');
+    Array.prototype.forEach.call($('chips').children, function (b) { b.onclick = function () { FILT = b.dataset.f; renderList(); }; });
+    var q = $('q').value.trim().toLowerCase();
+    var rows = GUESTS.filter(function (g) {
+      var k = kursiOf(g);
+      if (FILT === 'belum' && k.length) return false;
+      if (FILT === 'sudah' && !k.length) return false;
+      if (FILT === 'hadir' && !isHadir(g)) return false;
+      return !q || (g.nama + ' ' + g.kategori + ' ' + g.meja).toLowerCase().indexOf(q) >= 0;
+    });
+    $('glist').innerHTML = rows.length ? rows.slice(0, 150).map(function (g) {
+      var k = kursiOf(g);
+      return '<div class="gi" role="option" data-id="' + esc(g.id) + '"><div class="n"><b>' + esc(g.nama) + '</b><small>' + esc(k.length ? k.join(', ') : (g.kategori || 'Belum dapat kursi')) + '</small></div>' +
+        (k.length ? '<span style="color:var(--sage);font-weight:800">✓</span>' : '') + '<span class="pax">' + pax(g) + ' pax</span></div>';
+    }).join('') : '<div style="text-align:center;color:var(--ink2);padding:24px 0">Tidak ada tamu yang cocok.' + (GUESTS.length ? '' : '<br><small>Belum ada tamu' + (CFG.acara ? ' yang diundang ke ' + esc(CFG.acara) : '') + '.</small>') + '</div>';
+  }
+  $('glist').onclick = function (e) { var it = e.target.closest('.gi'); if (it) choose(byId(it.dataset.id)); };
+  function choose(g) {
+    if (!g) return;
+    if (CUR && g.id !== CUR.id && dirty() && !confirm('Pilihan kursi untuk ' + CUR.nama + ' belum di-input. Buang pilihan ini?')) return;
+    closePanel(); $('q').blur(); pickGuest(g); focusSeats(g);
+  }
+  function pickGuest(g) { CUR = g; var k = kursiOf(g), fc = freeCodes(); SEL = k.some(function (x) { return fc.indexOf(x) >= 0; }) ? [k.filter(function (x) { return fc.indexOf(x) >= 0; })[0]] : k.slice(); renderSel(); paint(); }
+  function resetSel() { CUR = null; SEL = []; renderSel(); paint(); }
+  function dirty() { return !!CUR && SEL.slice().sort().join('|') !== kursiOf(CUR).slice().sort().join('|'); }
+  function focusSeats(g) {
+    var els = kursiOf(g).map(function (k) { return document.querySelector('#map .seat[data-k="' + k.replace(/"/g, '') + '"]'); }).filter(Boolean);
+    if (!els.length) { var zi = zoneOfFree(kursiOf(g)[0]); if (zi >= 0) els = [document.querySelector('#map .ust[data-z="' + zi + '"]')]; }
+    if (!els.length || !els[0]) return;
+    if (ZOOM < 2) setZoom(2);
+    setTimeout(function () {
+      var box = $('mapbox'), r = els[0].getBoundingClientRect(), b = box.getBoundingClientRect();
+      box.scrollBy({ left: r.left - b.left - b.width / 2, top: r.top - b.top - b.height / 2, behavior: 'smooth' });
+      box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      els.forEach(function (el) { if (el.classList.contains('seat')) { el.classList.remove('pulse'); void el.getBBox(); el.classList.add('pulse'); } });
+    }, 280);
+  }
+  function renderSel() {
+    var on = !!CUR;
+    if (document.activeElement !== $('q')) { $('q').value = on ? CUR.nama : ''; $('qClr').classList.toggle('hidden', !on); }
+    $('pkSub').textContent = on ? pax(CUR) + ' pax' + (CUR.kategori ? ' • ' + CUR.kategori : '') + (isHadir(CUR) ? ' • ✓ sudah hadir' : '') + (kursiOf(CUR).length ? ' • kursi: ' + kursiOf(CUR).join(', ') : ' • belum dapat kursi')
+      : GUESTS.length + ' tamu' + (CFG.acara ? ' diundang ke ' + CFG.acara : '');
+    $('selBox').classList.toggle('hidden', !on);
+    if (!on) { $('dock').classList.remove('on'); return; }
+    var need = pax(CUR), free = isFreeSel(), n = free ? need : SEL.length;
+    var fz = free ? CFG.zona[zoneOfFree(SEL[0])] : null;
+    $('selInfo').innerHTML = '<span class="pill ' + (free || n === need ? 'ok' : 'warn') + '">' + (free ? esc(fz ? fz.nama : SEL[0]) + ' (bebas) • ' + need + ' pax' : n + ' / ' + need + ' kursi dicentang') + '</span>' +
+      (free ? '' : SEL.map(function (k) { return '<span class="pill code">' + esc(k) + '</span>'; }).join(''));
+    $('freeBtns').innerHTML = CFG.zona.map(function (z, i) { return z.bernomor === false ? '<button class="btn btn-light" type="button" data-fz="' + i + '">🪑 ' + esc(z.nama) + '</button>' : ''; }).join('');
+    Array.prototype.forEach.call($('freeBtns').children, function (b) { b.onclick = function () { assignFree(+b.dataset.fz); }; });
+    $('dock').classList.add('on');
+    $('dkName').textContent = CUR.nama;
+    $('dkSub').textContent = !SEL.length ? 'Belum ada kursi dipilih' + (kursiOf(CUR).length ? ' — input untuk mengosongkan' : '') :
+      free ? (fz ? fz.nama : SEL[0]) + ' (' + need + ' pax)' : n + ' dari ' + need + ' kursi' + (n < need ? ' — kurang ' + (need - n) : '');
+    $('btnInput').disabled = !dirty();
+    $('btnInput').textContent = dirty() ? '✓ Input Kursi' : '✓ Tersimpan';
+  }
+  function assignFree(zi) {
+    var z = CFG.zona[zi], cap = LAY.zinfo[zi].cap;
+    var used = GUESTS.filter(function (g) { return g !== CUR && kursiOf(g).indexOf(z.kode) >= 0; }).reduce(function (s, g) { return s + pax(g); }, 0);
+    if (used + pax(CUR) > cap) { toast(z.nama + ' tidak cukup: sisa ' + Math.max(0, cap - used) + ' kursi, tamu ini ' + pax(CUR) + ' pax.', true); return; }
+    SEL = [z.kode]; renderSel(); paint();
+  }
+  $('btnClear').onclick = function () { SEL = []; renderSel(); paint(); };
+  $('btnCancel').onclick = function () { resetSel(); };
+
+  $('map').addEventListener('click', function (e) {
+    var fz = e.target.closest('.ust');
+    if (fz) { var zi = +fz.getAttribute('data-z'); if (CUR) assignFree(zi); else showFreeInfo(zi); return; }
+    var el = e.target.closest('.seat'); if (!el) return;
+    var k = el.getAttribute('data-k'), g = OWNER[k];
+    if (!CUR) { showInfo(k, g); return; }
+    if (g && g.id !== CUR.id) { toast(k + ' sudah dipakai ' + g.nama); return; }
+    var i = SEL.indexOf(k);
+    if (i >= 0) SEL.splice(i, 1);
+    else {
+      if (isFreeSel()) SEL = [];
+      if (SEL.length >= pax(CUR)) { toast(CUR.nama + ' hanya ' + pax(CUR) + ' pax. Hapus centang kursi lain dulu.'); return; }
+      SEL.push(k);
+    }
+    renderSel(); paint();
+  });
+  function showInfo(k, g) {
+    $('inTitle').textContent = k;
+    $('inBody').innerHTML = g ?
+      '<dl><dt>Tamu</dt><dd>' + esc(g.nama) + '</dd><dt>Pax</dt><dd>' + pax(g) + ' orang</dd><dt>Kursi</dt><dd>' + esc(kursiOf(g).join(', ')) + '</dd><dt>Status</dt><dd style="color:' + (isHadir(g) ? 'var(--hadir)' : 'var(--ink2)') + '">' + (isHadir(g) ? '✓ Sudah hadir' + (g.waktuDatang ? ' (' + esc(String(g.waktuDatang).slice(11, 16)) + ')' : '') : 'Belum hadir') + '</dd></dl>' +
+      '<button class="btn btn-dark" id="inEdit" type="button" style="width:100%">Ubah kursi tamu ini</button>' :
+      '<p style="color:var(--ink2);margin:0 0 12px;text-align:center">Kursi ini masih kosong.</p><button class="btn btn-dark" id="inEdit" type="button" style="width:100%">Pilih tamu untuk kursi ini</button>';
+    openSheet();
+    $('inEdit').onclick = function () { closeSheet(); if (g) choose(g); else setTimeout(openPick, 300); };
+  }
+  function showFreeInfo(zi) {
+    var z = CFG.zona[zi], gs = GUESTS.filter(function (g) { return kursiOf(g).indexOf(z.kode) >= 0; });
+    var used = gs.reduce(function (s, g) { return s + pax(g); }, 0);
+    $('inTitle').textContent = z.nama + ' (kursi bebas)';
+    $('inBody').innerHTML = '<dl><dt>Kode</dt><dd>' + esc(z.kode) + '</dd><dt>Terisi</dt><dd>' + used + ' / ' + LAY.zinfo[zi].cap + ' pax</dd><dt>Sudah hadir</dt><dd>' + gs.filter(isHadir).length + ' dari ' + gs.length + ' tamu</dd></dl>' +
+      '<div style="max-height:40vh;overflow:auto;font-size:13.5px">' + (gs.map(function (g) { return '<div style="padding:6px 0;border-bottom:1px solid var(--line)">' + (isHadir(g) ? '✅ ' : '▫️ ') + esc(g.nama) + ' <span style="color:var(--muted)">(' + pax(g) + ')</span></div>'; }).join('') || '<p style="color:var(--ink2)">Belum ada tamu.</p>') + '</div>';
+    openSheet();
+  }
+  $('btnInput').onclick = function () {
+    if (!CUR || !dirty()) return;
+    var b = this, g = CUR, kirim = SEL.slice();
+    if (kirim.length && !isFreeSel() && kirim.length < pax(g) && !confirm(g.nama + ' punya ' + pax(g) + ' pax, baru ' + kirim.length + ' kursi dicentang. Tetap input?')) return;
+    b.disabled = true; b.textContent = 'Menyimpan…';
+    api('setKursi', { id: g.id, kursi: kirim }).then(function (r) {
+      g.meja = r.guest.meja; rebuildOwners();
+      toast('Kursi ' + g.nama + ' tersimpan' + (g.meja ? ': ' + g.meja : ' (dikosongkan)'));
+      resetSel();
+    }).catch(function (e) { toast(e.message, true); b.disabled = false; renderSel(); if (/sudah dipakai/.test(e.message)) loadAll(true); });
+  };
+  function openSheet() { $('ov').classList.add('on'); $('shInfo').classList.add('on'); }
+  function closeSheet() { $('ov').classList.remove('on'); $('shInfo').classList.remove('on'); }
+  $('ov').onclick = closeSheet;
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeSheet(); });
+  function setZoom(z) { ZOOM = Math.max(1, Math.min(4, z)); $('map').style.width = (ZOOM * 100) + '%'; }
+  $('zIn').onclick = function () { setZoom(ZOOM + .5); };
+  $('zOut').onclick = function () { setZoom(ZOOM - .5); };
+  $('liveSw').onclick = function () {
+    var on = !this.classList.contains('on');
+    this.classList.toggle('on', on); this.setAttribute('aria-checked', on); $('liveDot').classList.toggle('on', on);
+    clearInterval(liveT);
+    if (on) liveT = setInterval(function () { if (!dirty() && !document.hidden && $('vSet').classList.contains('hidden')) loadAll(true); }, 15000);
+  };
+  window.addEventListener('beforeunload', function (e) { if (dirty()) { e.preventDefault(); e.returnValue = ''; } });
+
+  /* =====================================================================
+     PENGATURAN DENAH
+     ===================================================================== */
+  var LIM = { meja: [1, 60], kursi: [2, 16], baris: [1, 60], blok: [1, 2], maks: [0, 5000], bufLen: [2, 30] };
+  $('btnSetting').onclick = function () {
+    if (dirty() && !confirm('Pilihan kursi belum di-input. Lanjut ke pengaturan?')) return;
+    resetSel(); EDIT = clone(CFG); fillSetForm(); renderSet(); show('set'); window.scrollTo(0, 0);
+  };
+  $('setCancel').onclick = function () { EDIT = null; renderMap(); paint(); renderSel(); show('app'); };
+  function fillSetForm() {
+    $('fAcara').innerHTML = '<option value="">Semua tamu</option>' + ACARA.map(function (a) { return '<option' + (a === EDIT.acara ? ' selected' : '') + '>' + esc(a) + '</option>'; }).join('') +
+      (EDIT.acara && ACARA.indexOf(EDIT.acara) < 0 ? '<option selected>' + esc(EDIT.acara) + '</option>' : '');
+    $('fCap').value = EDIT.kapasitas || '';
+    $('fStage').value = EDIT.panggung || '';
+    $('fVW').value = EDIT.venue && EDIT.venue.lebar ? EDIT.venue.lebar : '';
+    $('fVL').value = EDIT.venue && EDIT.venue.panjang ? EDIT.venue.panjang : '';
+    $('fBufLen').value = EDIT.prasmanan.panjang || 6;
+  }
+  $('fAcara').onchange = function () { EDIT.acara = this.value; renderSet(); };
+  $('fStage').oninput = function () { EDIT.panggung = this.value; renderSet(true); };
+  $('fCap').onchange = function () { EDIT.kapasitas = Math.max(0, parseInt(this.value, 10) || 0); renderSet(); };
+  $('fVW').onchange = function () { EDIT.venue.lebar = Math.max(0, parseFloat(this.value) || 0); renderSet(); };
+  $('fVL').onchange = function () { EDIT.venue.panjang = Math.max(0, parseFloat(this.value) || 0); renderSet(); };
+  $('fBuf').onclick = function () { tryChange(function (c) { c.prasmanan.aktif = !c.prasmanan.aktif; }); };
+  Array.prototype.forEach.call($('fBufPos').children, function (b) { b.onclick = function () { tryChange(function (c) { c.prasmanan.posisi = b.dataset.v; }); }; });
+
+  /** Terapkan perubahan; tolak bila melebihi kapasitas gedung atau tidak muat di venue. */
+  function tryChange(fn, silentRender) {
+    var next = clone(EDIT); fn(next);
+    var L = layout(next), f = fitInfo(next, L), Lp = layout(EDIT), fp = fitInfo(EDIT, Lp);
+    if (f.over && L.total > Lp.total) { toast('Tidak bisa: melebihi kapasitas gedung (' + next.kapasitas + ' kursi). Sisa ' + Math.max(0, next.kapasitas - Lp.total) + ' kursi.', true); renderSet(); return false; }
+    if (!f.fits && (L.needW > Lp.needW + .01 || L.needH > Lp.needH + .01)) {
+      toast('Tidak bisa: denah tidak muat di venue ' + fmtV(next) + '. Butuh ± ' + fmtM(L.needW) + ' × ' + fmtM(L.needH) + '.', true); renderSet(); return false;
+    }
+    EDIT = next; renderSet(silentRender); return true;
+  }
+  function fmtV(c) { return (c.venue.lebar || '?') + ' × ' + (c.venue.panjang || '?') + ' m'; }
+  function zoneHTML(z, i, n) {
+    var bundar = z.tipe === 'bundar', cap = zoneSeatCount(z);
+    var step = function (f, v) { return '<div class="step" data-f="' + f + '"><button type="button" data-d="-1">−</button><input type="number" value="' + v + '" inputmode="numeric"><button type="button" data-d="1">+</button></div>'; };
+    var ex = z.bernomor === false ? '<code>' + esc(z.kode) + '</code> (semua kursi zona ini sama, tanpa nomor)' :
+      bundar ? '<code>' + esc(z.kode) + '-1-1</code> … <code>' + esc(z.kode) + '-' + z.meja + '-' + z.kursi + '</code>' :
+      '<code>' + esc(z.kode) + '-1-1</code> (row-kursi)' + ((z.blok === 2 || z.hadap === 'aisle') && z.nomor !== 'sama' ? ' • row ' + (z.nomor === 'ganjil-kiri' ? 'ganjil di kiri, genap di kanan' : 'ganjil di kanan, genap di kiri') : '');
+    return '<div class="zcard" data-i="' + i + '">' +
+      '<div class="zhead"><b>' + esc(z.nama || 'Zona ' + (i + 1)) + '</b><span class="cap">' + cap + ' kursi</span>' +
+      '<button class="ib" type="button" data-act="up" ' + (i === 0 ? 'disabled' : '') + ' aria-label="Naik">↑</button><button class="ib" type="button" data-act="down" ' + (i === n - 1 ? 'disabled' : '') + ' aria-label="Turun">↓</button><button class="ib" type="button" data-act="del" aria-label="Hapus">🗑</button></div>' +
+      '<div class="grid2"><div><label class="l">Nama zona</label><input class="input" data-f="nama" value="' + esc(z.nama) + '" maxlength="30"></div>' +
+      '<div><label class="l">Kode kursi</label><input class="input" data-f="kode" value="' + esc(z.kode) + '" maxlength="24"></div></div>' +
+      '<label class="l">Tipe</label><div class="seg" data-f="tipe"><button type="button" data-v="bundar" class="' + (bundar ? 'on' : '') + '">⭕ Meja bundar</button><button type="button" data-v="baris" class="' + (!bundar ? 'on' : '') + '">▤ Kursi baris (theater)</button></div>' +
+      (bundar ?
+        '<div class="grid2"><div><label class="l">Jumlah meja</label>' + step('meja', z.meja) + '</div><div><label class="l">Kursi per meja</label>' + step('kursi', z.kursi) + '</div></div>' :
+        '<label class="l">Menghadap</label><div class="seg" data-f="hadap"><button type="button" data-v="depan" class="' + (z.hadap !== 'aisle' ? 'on' : '') + '">⬆ Ke depan (panggung)</button><button type="button" data-v="aisle" class="' + (z.hadap === 'aisle' ? 'on' : '') + '">↔ Ke aisle (jalan tengah)</button></div>' +
+        (z.hadap === 'aisle' ? '' : '<label class="l">Blok</label><div class="seg" data-f="blok"><button type="button" data-v="1" class="' + (z.blok !== 2 ? 'on' : '') + '">1 blok di tengah</button><button type="button" data-v="2" class="' + (z.blok === 2 ? 'on' : '') + '">2 blok (kiri-kanan aisle)</button></div>') +
+        '<div class="grid2"><div><label class="l">Jumlah baris' + ((z.blok === 2 || z.hadap === 'aisle') ? ' <small>(per blok)</small>' : '') + '</label>' + step('baris', z.baris) + '</div>' +
+        '<div><label class="l">Pola kursi per baris</label><input class="input" data-f="pola" value="' + esc(z.pola) + '" placeholder="mis. 2,3"></div></div>' +
+        '<div class="hint">Pola: angka dipisah koma = kelompok kursi, di antara kelompok ada meja kecil. Contoh <b>2,3</b> → 2 kursi, meja, 3 kursi. <b>10</b> → 10 kursi tanpa meja.</div>' +
+        '<label class="l">Batasi jumlah kursi <small>(0 = penuh semua baris)</small></label>' + step('maks', z.maks || 0)) +
+      '<label class="tog"><button class="sw' + (z.bernomor !== false ? ' on' : '') + '" type="button" data-f="bernomor" role="switch"></button><span>Kursi bernomor<small>Matikan untuk kursi bebas (mis. tamu umum) — cukup satu kode untuk semua</small></span></label>' +
+      (!bundar && z.bernomor !== false && (z.blok === 2 || z.hadap === 'aisle') ? '<label class="l">Penomoran row</label><select class="input" data-f="nomor"><option value="ganjil-kanan"' + (z.nomor === 'ganjil-kanan' ? ' selected' : '') + '>Ganjil di kanan, genap di kiri</option><option value="ganjil-kiri"' + (z.nomor === 'ganjil-kiri' ? ' selected' : '') + '>Ganjil di kiri, genap di kanan</option><option value="sama"' + (z.nomor === 'sama' ? ' selected' : '') + '>Row sama kiri-kanan, kursi bersambung</option></select>' : '') +
+      (i < n - 1 ? '<label class="tog"><button class="sw' + (z.pembatas ? ' on' : '') + '" type="button" data-f="pembatas" role="switch"></button><span>Pasang pembatas (tali gala) setelah zona ini</span></label>' : '') +
+      '<div class="ex">Contoh kode: ' + ex + '</div></div>';
+  }
+  function renderSet(skipZones) {
+    var L = layout(EDIT), f = fitInfo(EDIT, L);
+    drawSvg($('pmap'), L);
+    $('sumSeats').textContent = L.total; $('sumCap').textContent = f.cap || '∞';
+    var pct = f.cap ? Math.min(100, L.total / f.cap * 100) : 0;
+    $('cbarFill').style.width = (f.cap ? pct : 0) + '%';
+    $('cbar').className = 'cbar' + (f.over ? ' over' : f.cap && L.total === f.cap ? ' full' : '');
+    $('sumLeft').innerHTML = !f.cap ? '<span style="color:var(--muted)">isi kapasitas gedung</span>' : f.over ? '<span class="fit no">⚠️ lebih ' + (L.total - f.cap) + ' kursi</span>' : L.total === f.cap ? '<span class="fit ok" style="color:#a86a12">● Kapasitas penuh</span>' : 'sisa <b>' + (f.cap - L.total) + '</b> kursi';
+    $('sumNeed').textContent = fmtM(L.needW) + ' × ' + fmtM(L.needH);
+    var v = EDIT.venue || {};
+    $('sumFit').innerHTML = !(v.lebar > 0 || v.panjang > 0) ? '<span style="color:var(--muted)">isi ukuran venue untuk cek muat</span>' :
+      f.fits ? '<span class="fit ok">✓ Muat di venue ' + fmtV(EDIT) + '</span>' : '<span class="fit no">✗ Tidak muat (' + (!f.okW ? 'lebar' : '') + (!f.okW && !f.okH ? ' & ' : '') + (!f.okH ? 'panjang' : '') + ') venue ' + fmtV(EDIT) + '</span>';
+    $('setSave').disabled = f.over || !f.fits || !EDIT.zona.length;
+    $('fBuf').classList.toggle('on', !!EDIT.prasmanan.aktif);
+    $('bufOpts').classList.toggle('hidden', !EDIT.prasmanan.aktif);
+    Array.prototype.forEach.call($('fBufPos').children, function (b) { b.classList.toggle('on', b.dataset.v === EDIT.prasmanan.posisi); });
+    $('addZone').disabled = f.cap > 0 && L.total >= f.cap;
+    $('addZone').textContent = $('addZone').disabled ? 'Kapasitas gedung penuh' : '＋ Tambah zona';
+    if (!skipZones) $('zones').innerHTML = EDIT.zona.map(function (z, i) { return zoneHTML(z, i, EDIT.zona.length); }).join('') || '<p style="color:var(--ink2);text-align:center">Belum ada zona.</p>';
+  }
+  // event zona (delegasi)
+  $('zones').addEventListener('click', function (e) {
+    var card = e.target.closest('.zcard'); if (!card) return;
+    var i = +card.dataset.i, b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.act === 'del') { if (confirm('Hapus zona "' + EDIT.zona[i].nama + '"?')) { EDIT.zona.splice(i, 1); renderSet(); } return; }
+    if (b.dataset.act === 'up' || b.dataset.act === 'down') { var j = i + (b.dataset.act === 'up' ? -1 : 1); tryChange(function (c) { var t = c.zona[i]; c.zona[i] = c.zona[j]; c.zona[j] = t; }); return; }
+    var seg = b.closest('.seg');
+    if (seg) { var f = seg.dataset.f, v = b.dataset.v; tryChange(function (c) { var z = c.zona[i]; if (f === 'blok') z.blok = +v; else z[f] = v; if (f === 'tipe') normZone(z); if (f === 'hadap' && v === 'aisle') z.blok = 2; }); return; }
+    if (b.classList.contains('sw')) { var f2 = b.dataset.f; tryChange(function (c) { var z = c.zona[i]; z[f2] = f2 === 'bernomor' ? z.bernomor === false : !z[f2]; }); return; }
+    var st = b.closest('.step');
+    if (st) { var f3 = st.dataset.f, d = +b.dataset.d; tryChange(function (c) { var z = c.zona[i]; z[f3] = clampF(f3, (z[f3] || 0) + d); }); }
+  });
+  $('zones').addEventListener('change', function (e) {
+    var card = e.target.closest('.zcard'); if (!card) return;
+    var i = +card.dataset.i, el = e.target, st = el.closest('.step'), f = st ? st.dataset.f : el.dataset.f;
+    if (!f) return;
+    tryChange(function (c) {
+      var z = c.zona[i];
+      if (st) z[f] = clampF(f, parseInt(el.value, 10) || 0);
+      else if (f === 'kode') z.kode = String(el.value).trim().replace(/\s+/g, '-').replace(/[^A-Za-z0-9._-]/g, '') || 'Zona' + (i + 1);
+      else if (f === 'pola') z.pola = polaArr({ pola: el.value }).join(',');
+      else z[f] = el.value;
+    });
+  });
+  $('zones').addEventListener('input', function (e) {
+    if (e.target.dataset.f === 'nama') { var i = +e.target.closest('.zcard').dataset.i; EDIT.zona[i].nama = e.target.value; e.target.closest('.zcard').querySelector('.zhead b').textContent = e.target.value || 'Zona'; renderSet(true); }
+  });
+  document.querySelector('[data-f="bufLen"]').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; tryChange(function (c) { c.prasmanan.panjang = clampF('bufLen', (c.prasmanan.panjang || 6) + +b.dataset.d); }); $('fBufLen').value = EDIT.prasmanan.panjang; });
+  $('fBufLen').onchange = function () { tryChange(function (c) { c.prasmanan.panjang = clampF('bufLen', parseInt($('fBufLen').value, 10) || 6); }); $('fBufLen').value = EDIT.prasmanan.panjang; };
+  function clampF(f, v) { var l = LIM[f] || [0, 999]; return Math.max(l[0], Math.min(l[1], v)); }
+  function normZone(z) {
+    if (z.tipe === 'bundar') { z.meja = z.meja || 5; z.kursi = z.kursi || 8; }
+    else { z.blok = z.blok || 2; z.baris = z.baris || 5; z.pola = z.pola || '5,5'; z.hadap = z.hadap || 'depan'; z.nomor = z.nomor || 'ganjil-kanan'; z.maks = z.maks || 0; }
+  }
+  $('addZone').onclick = function () {
+    var n = EDIT.zona.length + 1, kode = 'Zona' + n;
+    while (EDIT.zona.some(function (z) { return z.kode.toLowerCase() === kode.toLowerCase(); })) kode += 'b';
+    var L = layout(EDIT), left = EDIT.kapasitas > 0 ? EDIT.kapasitas - L.total : 999;
+    var z = { id: 'z' + Date.now(), nama: 'Zona ' + n, tipe: 'baris', blok: 2, baris: 1, pola: '5', hadap: 'depan', kode: kode, bernomor: true, nomor: 'ganjil-kanan', maks: left < 10 ? left : 0, pembatas: false };
+    if (tryChange(function (c) { c.zona.push(z); })) setTimeout(function () { var cs = $('zones').querySelectorAll('.zcard'); cs[cs.length - 1].scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 50);
+  };
+  $('setSave').onclick = function () {
+    var L = layout(EDIT), codes = {}; L.seats.forEach(function (s) { codes[s.k] = 1; });
+    var kodes = EDIT.zona.map(function (z) { return z.kode.toLowerCase(); });
+    if (kodes.some(function (k, i) { return kodes.indexOf(k) !== i; })) { toast('Setiap zona harus punya kode kursi yang berbeda', true); return; }
+    var orphan = GUESTS.filter(function (g) { return kursiOf(g).some(function (k) { return !codes[k]; }); });
+    if (orphan.length && !confirm(orphan.length + ' tamu punya kursi yang tidak ada di denah baru (mis. ' + orphan.slice(0, 3).map(function (g) { return g.nama; }).join(', ') + '). Data kursinya tetap tersimpan, tapi tidak tampil di denah. Lanjut simpan?')) return;
+    var b = this; b.disabled = true; b.textContent = 'Menyimpan…';
+    api('simpanDenah', { denah: EDIT }).then(function (r) {
+      CFG = r.denah; SAVED = true; EDIT = null; $('noteSetup').classList.add('hidden');
+      toast('Denah tersimpan');
+      return loadAll(true);
+    }).then(function () { renderMap(); paint(); renderSel(); show('app'); })
+      .catch(function (e) { toast(e.message, true); })
+      .then(function () { b.disabled = false; b.textContent = '💾 Simpan denah'; });
+  };
+
+  loadAll();
+})();
+</script>
+</body>
+</html>

@@ -1205,6 +1205,7 @@
         '<div class="card"><h2>Aktivitas terakhir</h2>' + (rec || '<div class="empty">Belum ada aktivitas.</div>') + '</div>' +
         '<button class="btn btn-ghost" id="btnRefresh">↻ Muat ulang</button>' +
         '<a class="btn btn-gold" href="kirim.html" style="text-decoration:none">💌 Kelola tamu &amp; kirim undangan (WA)</a>' +
+        '<a class="btn btn-gold" href="denah.html" style="text-decoration:none">🪑 Denah kursi Ngunduh Mantu</a>' +
         '<a class="btn btn-gold" href="qr.html" style="text-decoration:none">⬇️ Unduh QR untuk undangan</a>';
       requestAnimationFrame(function () { setTimeout(function () { var r = $('ringFg'); if (r) r.style.strokeDashoffset = off; }, 30); });
       $('btnRefresh').onclick = function () { refreshGuests(); loadStats(); };
