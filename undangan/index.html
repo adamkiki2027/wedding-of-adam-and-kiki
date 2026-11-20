@@ -43,8 +43,8 @@ var UNDANGAN = {
   catatanNama: 'Mohon maaf apabila ada kesalahan penulisan nama/gelar',
   pembuka: 'Dengan memohon rahmat dan ridho Allah Subhanahu wa Ta\'ala, kami bermaksud menyelenggarakan acara pernikahan putra-putri kami:',
   mempelai: [
-    { nama: 'Nur Rizqy Fitriyani', ortu: 'Putri dari Bapak Taufik, S.Pd. & Ibu Henny Mulyani' },
-    { nama: 'Adam Wildan Daffa Al Farisi Widodo', ortu: 'Putra dari Bapak Sugeng Widodo & Ibu Umi Astuti, S.Ag.' }
+    { nama: 'Nur Rizqy Fitriyani', ortu: 'Putri dari Bapak Taufik, S.Pd. & Ibu Henny Mulyani', ig: 'nrizqy00' },
+    { nama: 'Adam Wildan Daffa Al Farisi Widodo', ortu: 'Putra dari Bapak Sugeng Widodo & Ibu Umi Astuti, S.Ag.', ig: 'adamwildan14' }
   ],
   penutupMempelai: 'Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir untuk memberikan doa restu kepada kedua mempelai.',
   acara: [
@@ -60,8 +60,8 @@ var UNDANGAN = {
   ],
   tandaKasihPembuka: 'Kehadiran dan doa restu Anda merupakan hadiah yang paling berarti bagi kami. Namun, apabila Anda ingin memberikan tanda kasih, Anda dapat mengirimkannya melalui rekening berikut.',
   rekening: [
-    { bank: 'Bank BNI', nomor: '1792-6897-26', nama: 'Nur Rizqy Fitriyani' },
-    { bank: 'Bank Mandiri', nomor: '1380025941936', nama: 'Adam Wildan Daffa' }
+    { bank: 'Bank Mandiri', nomor: '3100-1769-1570', nama: 'Nur Rizqy' },
+    { bank: 'Bank BSI', nomor: '0000-0000-0000', nama: 'Adam Wildan' }
   ],
   tandaKasihPenutup: 'Semoga segala doa, kasih sayang, dan kebaikan yang Anda berikan menjadi berkah bagi kita semua. Kami berharap dapat merayakan hari istimewa ini bersama Anda, baik secara langsung maupun melalui doa dan restu yang tulus.',
   musik: 'musik.mp3'    // taruh file lagu di folder undangan dengan nama ini
@@ -234,6 +234,12 @@ var UNDANGAN = {
   .bride { font-size: clamp(38px, 11vw, 50px); color: #ec1f7a; margin: 6px 0; }
   .amp { font-size: 40px; color: #ec1f7a; margin: 2px 0; }
   .ortu { font-size: 14px; color: #b8507f; margin: 2px 0 8px; }
+  .ig { display: inline-flex; align-items: center; gap: 6px; margin: 2px 0 10px; padding: 6px 13px 6px 10px; border-radius: 999px; text-decoration: none;
+        font: 600 12.5px "League Spartan", sans-serif; letter-spacing: .03em; color: #c2185b; background: rgba(255,255,255,.75);
+        border: 1px solid rgba(214,36,110,.35); box-shadow: 0 3px 10px rgba(214,36,110,.12); transition: transform .2s, background .2s, box-shadow .2s; }
+  .ig svg { width: 15px; height: 15px; flex: none; }
+  .ig:hover, .ig:active { background: #fff; transform: translateY(-1px); box-shadow: 0 5px 14px rgba(214,36,110,.22); }
+  .ig:empty { display: none; }
   .flower-tr, .flower-bl { position: absolute; width: 50%; max-width: 270px; z-index: 6; pointer-events: none; }
   .flower-tr { right: -1%; top: -0.5%; transform: scaleX(-1); }
   .flower-bl { left: -1%; bottom: -0.5%; transform: scaleY(-1); }
@@ -426,9 +432,11 @@ var UNDANGAN = {
         <p class="lead rv" style="--d:.3s" id="pembuka"></p>
         <div class="bride script rv" style="--d:.45s" id="m1"></div>
         <div class="ortu rv" id="o1"></div>
+        <a class="ig rv" id="ig1" target="_blank" rel="noopener"></a>
         <div class="amp script rv" style="--d:.55s">&amp;</div>
         <div class="bride script rv" style="--d:.65s" id="m2"></div>
         <div class="ortu rv" id="o2"></div>
+        <a class="ig rv" id="ig2" target="_blank" rel="noopener"></a>
         <p class="lead rv" style="--d:.75s;margin:18px 0 0" id="penutupM"></p>
       </div>
     </div>
@@ -543,6 +551,14 @@ var UNDANGAN = {
   $('pembuka').textContent = U.pembuka;
   $('m1').textContent = U.mempelai[0].nama; $('o1').textContent = U.mempelai[0].ortu || '';
   $('m2').textContent = U.mempelai[1].nama; $('o2').textContent = U.mempelai[1].ortu || '';
+  var IG_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/></svg>';
+  [['ig1', U.mempelai[0].ig], ['ig2', U.mempelai[1].ig]].forEach(function (x) {
+    var u = String(x[1] || '').replace(/^@/, '').trim(), a = $(x[0]);
+    if (!u) { a.remove(); return; }
+    a.href = 'https://instagram.com/' + encodeURIComponent(u);
+    a.setAttribute('aria-label', 'Instagram @' + u);
+    a.innerHTML = IG_ICON + '<span>@' + esc(u) + '</span>';
+  });
   $('penutupM').textContent = U.penutupMempelai;
   $('giftOpen').textContent = U.tandaKasihPembuka; $('giftClose').textContent = U.tandaKasihPenutup;
   var MAP_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>';
